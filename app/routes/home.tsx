@@ -1,11 +1,17 @@
-import { useState, type PropsWithChildren } from "react";
+import {
+	useState,
+	type PropsWithChildren,
+	memo,
+	useCallback,
+	useMemo,
+} from "react";
 
 type ColorPickerCardProps = {
 	color: string;
 	setColor: (color: string) => void;
 };
 
-const ColorPickerCard = ({ color, setColor }: ColorPickerCardProps) => {
+const ColorPickerCard = memo(({ color, setColor }: ColorPickerCardProps) => {
 	return (
 		<div className="bg-gray-800 p-6 rounded-lg shadow-lg">
 			<h2 className="text-xl mb-4">Color Picker</h2>
@@ -18,7 +24,9 @@ const ColorPickerCard = ({ color, setColor }: ColorPickerCardProps) => {
 			<p className="mt-2">Selected: {color}</p>
 		</div>
 	);
-};
+});
+
+ColorPickerCard.displayName = "ColorPickerCard";
 
 type CounterCardProps = {
 	count: number;
@@ -26,29 +34,33 @@ type CounterCardProps = {
 	onDecrease: () => void;
 };
 
-const CounterCard = ({ count, onIncrease, onDecrease }: CounterCardProps) => {
-	return (
-		<div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-			<h2 className="text-xl mb-4">Counter</h2>
-			<div className="flex items-center justify-between gap-4">
-				<button
-					onClick={onDecrease}
-					className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors"
-				>
-					-
-				</button>
-				<span className="text-2xl font-bold">{count}</span>
-				<button
-					onClick={onIncrease}
-					className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors"
-				>
-					+
-				</button>
+const CounterCard = memo(
+	({ count, onIncrease, onDecrease }: CounterCardProps) => {
+		return (
+			<div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+				<h2 className="text-xl mb-4">Counter</h2>
+				<div className="flex items-center justify-between gap-4">
+					<button
+						onClick={onDecrease}
+						className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors"
+					>
+						-
+					</button>
+					<span className="text-2xl font-bold">{count}</span>
+					<button
+						onClick={onIncrease}
+						className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors"
+					>
+						+
+					</button>
+				</div>
+				<p className="mt-2">Current value: {count}</p>
 			</div>
-			<p className="mt-2">Current value: {count}</p>
-		</div>
-	);
-};
+		);
+	},
+);
+
+CounterCard.displayName = "CounterCard";
 
 type SuperExpensiveComponentProps = {
 	config: {
@@ -57,57 +69,67 @@ type SuperExpensiveComponentProps = {
 	};
 };
 
-const SuperExpensiveComponent = ({
-	config,
-	children,
-}: PropsWithChildren<SuperExpensiveComponentProps>) => {
-	const elements = Array.from({ length: config.nrOfElements }, (_, i) => i);
+const SuperExpensiveComponent = memo(
+	({ config, children }: PropsWithChildren<SuperExpensiveComponentProps>) => {
+		const elements = Array.from({ length: config.nrOfElements }, (_, i) => i);
 
-	const getColor = (index: number) => {
-		const hue = (index * 10) % 360;
-		return `hsl(${hue}, 70%, 60%)`;
-	};
+		const getColor = (index: number) => {
+			const hue = (index * 10) % 360;
+			return `hsl(${hue}, 70%, 60%)`;
+		};
 
-	return (
-		<div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-			<h2 className="text-xl mb-4">10,000 Elements Grid</h2>
-			{children}
-			<div className="h-[400px] overflow-y-auto bg-gray-900 rounded p-2">
-				<div className="grid grid-cols-12 gap-1">
-					{elements.map((num) => (
-						<div
-							key={num}
-							style={{
-								backgroundColor: config.shuffleColor
-									? getColor(num)
-									: undefined,
-							}}
-							className="aspect-square rounded transition-all duration-200 hover:scale-105 hover:z-10 flex items-center justify-center text-[10px] font-medium text-white/90 shadow-sm"
-						>
-							{num}
-						</div>
-					))}
+		return (
+			<div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+				<h2 className="text-xl mb-4">10,000 Elements Grid</h2>
+				{children}
+				<div className="h-[400px] overflow-y-auto bg-gray-900 rounded p-2">
+					<div className="grid grid-cols-12 gap-1">
+						{elements.map((num) => (
+							<div
+								key={num}
+								style={{
+									backgroundColor: config.shuffleColor
+										? getColor(num)
+										: undefined,
+								}}
+								className="aspect-square rounded transition-all duration-200 hover:scale-105 hover:z-10 flex items-center justify-center text-[10px] font-medium text-white/90 shadow-sm"
+							>
+								{num}
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
-		</div>
-	);
-};
+		);
+	},
+);
 
-const ChildComponent = () => {
+SuperExpensiveComponent.displayName = "SuperExpensiveComponent";
+
+const ChildComponent = memo(() => {
 	return <div>Child</div>;
-};
+});
+
+ChildComponent.displayName = "ChildComponent";
 
 export default function StateContainer() {
 	const [color, setColor] = useState("#ffffff");
 	const [count, setCount] = useState(0);
 
-	const onIncrease = () => {
-		setCount(count + 1);
-	};
+	const onIncrease = useCallback(() => {
+		setCount((prev) => prev + 1);
+	}, []);
 
-	const onDecrease = () => {
-		setCount(count - 1);
-	};
+	const onDecrease = useCallback(() => {
+		setCount((prev) => prev - 1);
+	}, []);
+
+	const config = useMemo(
+		() => ({ nrOfElements: 10000, shuffleColor: true }),
+		[],
+	);
+
+	const children = useMemo(() => <ChildComponent />, []);
 
 	return (
 		<div className="p-8">
@@ -121,10 +143,8 @@ export default function StateContainer() {
 					onIncrease={onIncrease}
 					onDecrease={onDecrease}
 				/>
-				<SuperExpensiveComponent
-					config={{ nrOfElements: 10000, shuffleColor: true }}
-				>
-					<ChildComponent />
+				<SuperExpensiveComponent config={config}>
+					{children}
 				</SuperExpensiveComponent>
 			</div>
 		</div>
