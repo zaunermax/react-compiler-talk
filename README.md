@@ -1,11 +1,8 @@
-# Welcome to React Router!
+# Welcome to my React compiler talk demo repo
 
-A minimal template for experimenting with React Router v7.
+This Repo is intended to show what the React compiler can achieve. If you want to see the direct difference to to the `vite.config.ts` and uncomment the react compiler part.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/minimal)
-
-> ![NOTE]
-> This template should not be used for production apps and is intended more for experimentation and demo applications. Please see the [default](https://github.com/remix-run/react-router-templates/tree/main/default) template for a more full-featured template.
+There is also a branch which contains all "manual" improvements.
 
 ## Getting Started
 
@@ -14,7 +11,7 @@ A minimal template for experimenting with React Router v7.
 Install the dependencies:
 
 ```bash
-npm install
+pnpm i
 ```
 
 ### Development
@@ -22,11 +19,7 @@ npm install
 Start the development server with HMR:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Your application will be available at `http://localhost:5173`.
-
----
-
-Built with ❤️ using React Router.
